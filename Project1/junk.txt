@@ -1,0 +1,8 @@
+a.out
+harshita.c
+junk.txt
+rough.c
+runit.sh
+shell.c
+shell.h
+vinisha
