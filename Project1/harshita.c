@@ -20,7 +20,6 @@ void add_to_history(char *line) {
 }
 
 void processLine(char *line) {
-    char *args[MAXLINE / 2 + 1];
     char *args1[MAXLINE / 2 + 1];
     char *args2[MAXLINE / 2 + 1];
     int background = 0;
@@ -43,17 +42,18 @@ void processLine(char *line) {
         add_to_history(line);
     }
 
-    // Check for "ascii" command
-    if (strcmp(line, "ascii") == 0) {
-        ascii_art();
-        return;
-    }
-
     // Split the input line by semicolon to handle command separation
     char *command = strtok(line, ";");
     while (command != NULL) {
-        // Tokenize the command into arguments
         int i = 0;
+        int j = 0;
+        background = 0; // Reset background flag for each command
+        pipe_flag = 0; // Reset pipe flag for each command
+        redirect_in = 0; // Reset redirect in flag for each command
+        redirect_out = 0; // Reset redirect out flag for each command
+        input_file = NULL; // Reset input file for each command
+        output_file = NULL; // Reset output file for each command
+
         char *token = strtok(command, " ");
         while (token != NULL) {
             if (strcmp(token, "<") == 0) {
@@ -70,13 +70,13 @@ void processLine(char *line) {
                 i = 0;
             } else if (strcmp(token, "&") == 0) {
                 background = 1;
+                break; // No need to process further tokens in this command
             } else {
                 if (pipe_flag) {
-                    args2[i] = token;
+                    args2[i++] = token;
                 } else {
-                    args1[i] = token;
+                    args1[i++] = token;
                 }
-                i++;
             }
             token = strtok(NULL, " ");
         }
@@ -85,7 +85,13 @@ void processLine(char *line) {
         } else {
             args1[i] = NULL;
         }
-
+        
+         // Check for "ascii" command
+        if (strcmp(line, "ascii") == 0) {
+            ascii_art();
+            return;
+        }
+    
         pid_t pid = fork();
         if (pid < 0) {
             perror("fork failed");
@@ -145,12 +151,8 @@ void processLine(char *line) {
                 exit(EXIT_FAILURE);
             }
         } else {
-            // Parent process: Check the command termination condition
-            if (background) {
-                // Parent does not wait for the child if background flag is set
-                background = 0;
-            } else {
-                // Wait for the child to finish if not in background
+            // Parent process
+            if (!background) {
                 wait(NULL);
             }
         }
@@ -159,7 +161,6 @@ void processLine(char *line) {
         command = strtok(NULL, ";");
     }
 }
-
 
 int main(int argc, char **argv) {
     return interactiveShell();

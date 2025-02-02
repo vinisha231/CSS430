@@ -9,7 +9,7 @@
 #include <stdlib.h>
 
 #define HISTORY_SIZE 10
-#define MAXLINE 1024
+#define MAXLINE 80
 #define PROMPT "osh> "
 
 char *history[HISTORY_SIZE];
@@ -54,8 +54,6 @@ void display_ascii_art() {
     printf("        |||        \n");
     printf("        |||        \n");
     printf("\n");
-    printf("  VIOLENTLY BEAUTIFUL \n");
-    printf(" V I N I S H A   B A L A   D H A Y A N I D H I \n");
 }
 
 // interactive shell to process commands
