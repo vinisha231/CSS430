@@ -41,6 +41,23 @@ int main(int argc, char **argv) {
   }
 }
 
+// Function to display ASCII art for "ascii"
+void display_ascii_art() {
+    printf("\n");
+    printf("        @@@        \n");
+    printf("     @@@@@@@@@@@    \n");
+    printf("  @@@@@@@@@@@@@@@@@ \n");
+    printf(" @@@@@@@@@@@@@@@@@@@\n");
+    printf("  @@@@@@@@@@@@@@@@@ \n");
+    printf("     @@@@@@@@@@@    \n");
+    printf("        @@@        \n");
+    printf("        |||        \n");
+    printf("        |||        \n");
+    printf("\n");
+    printf("  VIOLENTLY BEAUTIFUL \n");
+    printf(" V I N I S H A   B A L A   D H A Y A N I D H I \n");
+}
+
 // interactive shell to process commands
 int interactiveShell() {
   bool should_run = true;
@@ -66,6 +83,9 @@ int interactiveShell() {
         strcpy(line, history[history_count - 1]);
         printf("%s\n", line);
       }
+    } else if (strcmp(line, "ascii") == 0) {
+      display_ascii_art(); // Display ASCII art when "ascii" is entered
+      continue;
     } else {
       add_to_history(line);
     }
