@@ -7,7 +7,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <sys/wait.h>
+//This is shell3.c
 #define HISTORY_SIZE 10
 #define MAXLINE 80
 #define PROMPT "osh> "
@@ -63,9 +64,7 @@ int interactiveShell() {
   while (should_run) {
     printf(PROMPT);
     fflush(stdout);
-    int n = fetchline(&line);
-    printf("read: %s (length = %d)\n", line, n);
-    // ^D results in n == -1
+    int n = fetchline(&line); 
     if (n == -1 || strcmp(line, "exit") == 0) {
       should_run = false;
       continue;

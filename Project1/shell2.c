@@ -184,4 +184,3 @@ int fetchline(char **line) {
   }
   return n;
 }
-// ps auxf | cat | tac | cat | tac | grep `whoami`
