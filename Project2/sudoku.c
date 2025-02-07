@@ -1,10 +1,14 @@
 // Sudoku puzzle verifier and solver
-
 #include <assert.h>
+#include <math.h>
 #include <pthread.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
 typedef struct {
   int row;
