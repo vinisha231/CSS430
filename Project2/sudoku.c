@@ -116,6 +116,47 @@ void *check_subgrid(void *param) {
   pthread_exit(0);
 }
 
+bool is_valid(int psize, int **grid, int row, int col, int num) {
+  for (int x = 1; x <= psize; x++) {
+    if (grid[row][x] == num || grid[x][col] == num) {
+      return false;
+    }
+  }
+
+  int subgridSize = (int)sqrt(psize);
+  int startRow = row - (row - 1) % subgridSize;
+  int startCol = col - (col - 1) % subgridSize;
+
+  for (int r = startRow; r < startRow + subgridSize; r++) {
+    for (int c = startCol; c < startCol + subgridSize; c++) {
+      if (grid[r][c] == num) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+bool solveSudoku(int psize, int **grid) {
+  for (int row = 1; row <= psize; row++) {
+    for (int col = 1; col <= psize; col++) {
+      if (grid[row][col] == 0) {
+        for (int num = 1; num <= psize; num++) {
+          if (is_valid(psize, grid, row, col, num)) {
+            grid[row][col] = num;
+            if (solveSudoku(psize, grid)) {
+              return true;
+            }
+            grid[row][col] = 0;
+          }
+        }
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
 void checkPuzzle(int psize, int **grid, bool *complete, bool *valid) {
   *valid = true;
   *complete = true;
@@ -232,7 +273,21 @@ int main(int argc, char **argv) {
   int sudokuSize = readSudokuPuzzle(argv[1], &grid);
   bool valid = false;
   bool complete = false;
+
+  // Check if the puzzle is complete
   checkPuzzle(sudokuSize, grid, &complete, &valid);
+
+  // If the puzzle is not complete, attempt to solve it
+  if (!complete) {
+    if (solveSudoku(sudokuSize, grid)) {
+      printf("Puzzle solved.\n");
+    } else {
+      printf("Could not solve the puzzle.\n");
+    }
+    // Re-check the puzzle for completeness and validity after solving
+    checkPuzzle(sudokuSize, grid, &complete, &valid);
+  }
+
   printf("Complete puzzle? ");
   printf(complete ? "true\n" : "false\n");
   if (complete) {
