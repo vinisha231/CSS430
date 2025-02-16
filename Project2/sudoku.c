@@ -1,3 +1,10 @@
+/**
+Vinisha Bala Dhayanidhi
+Sudoku puzzle verifier and solver
+Date: 02/16/2025
+*/
+// compile: gcc -Wall -Wextra sudoku.c -o sudoku -lm -lpthread
+// run: ./sudoku puzzle9-valid.txt
 // Sudoku puzzle verifier and solver
 #include <assert.h>
 #include <math.h>
@@ -17,31 +24,6 @@ typedef struct {
   int **grid;
   bool *result;
 } parameters;
-
-#define HISTORY_SIZE 10
-#define MAXLINE 80
-#define PROMPT "osh> "
-
-char *history[HISTORY_SIZE];
-int history_count = 0;
-
-void add_to_history(char *line) {
-  if (history_count < HISTORY_SIZE) {
-    history[history_count++] = strdup(line);
-  } else {
-    free(history[0]);
-    for (int i = 1; i < HISTORY_SIZE; i++) {
-      history[i - 1] = history[i];
-    }
-    history[HISTORY_SIZE - 1] = strdup(line);
-  }
-}
-
-void print_history() {
-  for (int i = 0; i < history_count; i++) {
-    printf("%d %s\n", i + 1, history[i]);
-  }
-}
 
 void *check_row(void *param) {
   parameters *data = (parameters *)param;
