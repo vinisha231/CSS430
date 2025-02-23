@@ -1,5 +1,8 @@
-// length of a time quantum
-#define QUANTUM 10
+#ifndef CPU_H
+#define CPU_H
 
-// run the specified task for the following time slice
+#include "task.h" // Include task.h to define Task
+
 void run(Task *task, int slice);
+
+#endif // CPU_H
