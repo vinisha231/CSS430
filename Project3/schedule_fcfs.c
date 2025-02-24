@@ -4,8 +4,9 @@
 #include "task.h"
 #include <stdbool.h> // For bool
 #include <stdio.h>
-#include <stdlib.h>         // For malloc and free
-#include <string.h>         // For strdup
+#include <stdlib.h> // For malloc and free
+#include <string.h> // For strdup
+
 struct node *g_head = NULL; // Global head of the task list
 
 // Function to add a task to the list
@@ -42,15 +43,56 @@ Task *pickNextTask() {
 // Function to schedule tasks based on FCFS
 void schedule() {
   int currentTime = 0;
+  int totalBurstTime = 0;
+  int dispatcherTime = 0;
+  int numTasks = 0;
   Task *task;
 
+  // Arrays to store task information for TAT, WT, RT
+  char *taskNames[100];
+  int burstTimes[100];
+  int startTimes[100];
+  int finishTimes[100];
+
   while ((task = pickNextTask()) != NULL) {
+    taskNames[numTasks] = task->name;
+    burstTimes[numTasks] = task->burst;
+    startTimes[numTasks] = currentTime;
     run(task, task->burst);
     currentTime += task->burst;
+    finishTimes[numTasks] = currentTime;
+    totalBurstTime += task->burst;
+    dispatcherTime++;
     printf("Running task = [%s] [%d] [%d] for %d units.\n", task->name,
            task->priority, task->burst, task->burst);
     printf("        Time is now: %d\n", currentTime);
     free(task->name);
     free(task);
+    numTasks++;
   }
+
+  // Calculate CPU utilization
+  int totalTime = totalBurstTime + dispatcherTime;
+  printf("Total Time required is %d units\n", totalTime);
+  double cpuUtilization = (double)totalBurstTime / totalTime * 100;
+  printf("CPU Utilization: %.2f%%\n", cpuUtilization);
+
+  // Print TAT, WT, RT table
+  printf("...|");
+  for (int i = 0; i < numTasks; i++) {
+    printf(" %s |", taskNames[i]);
+  }
+  printf("\nTAT|");
+  for (int i = 0; i < numTasks; i++) {
+    printf(" %d |", finishTimes[i]);
+  }
+  printf("\nWT |");
+  for (int i = 0; i < numTasks; i++) {
+    printf(" %d |", startTimes[i]);
+  }
+  printf("\nRT |");
+  for (int i = 0; i < numTasks; i++) {
+    printf(" %d |", startTimes[i]);
+  }
+  printf("\n");
 }
