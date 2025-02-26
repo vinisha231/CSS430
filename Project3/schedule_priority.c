@@ -21,29 +21,29 @@ void add(char *name, int priority, int burst) {
 // Function to compare two task names lexicographically
 bool comesBefore(char *a, char *b) { return strcmp(a, b) < 0; }
 
-// Function to pick the next task based on SJF with lexicographical order
+// Function to pick the next task based on Priority with lexicographical order
 Task *pickNextTask() {
   if (!g_head)
     return NULL;
 
   struct node *temp = g_head;
-  Task *shortestTask = temp->task;
+  Task *highestPriorityTask = temp->task;
 
   while (temp != NULL) {
-    if (temp->task->burst < shortestTask->burst ||
-        (temp->task->burst == shortestTask->burst &&
-         comesBefore(temp->task->name, shortestTask->name))) {
-      shortestTask = temp->task;
+    if (temp->task->priority > highestPriorityTask->priority ||
+        (temp->task->priority == highestPriorityTask->priority &&
+         comesBefore(temp->task->name, highestPriorityTask->name))) {
+      highestPriorityTask = temp->task;
     }
     temp = temp->next;
   }
 
   // Remove the task from the list
-  delete (&g_head, shortestTask);
-  return shortestTask;
+  delete (&g_head, highestPriorityTask);
+  return highestPriorityTask;
 }
 
-// Function to schedule tasks based on SJF
+// Function to schedule tasks based on Priority
 void schedule() {
   int currentTime = 0;
   int totalBurstTime = 0;
