@@ -21,29 +21,38 @@ void add(char *name, int priority, int burst) {
 // Function to compare two task names lexicographically
 bool comesBefore(char *a, char *b) { return strcmp(a, b) < 0; }
 
-// Function to pick the next task based on Priority with lexicographical order
+// Function to compare tasks based on priority and lexicographical order
+int compareTasks(Task *task1, Task *task2) {
+  if (task1->priority == task2->priority) {
+    return comesBefore(task1->name, task2->name) ? -1 : 1;
+  }
+  return task1->priority -
+         task2->priority; // Higher priority first (1 is higher priority)
+}
+
+// Function to pick the next task based on priority and round-robin
+// (lexicographical for same priority)
 Task *pickNextTask() {
   if (!g_head)
     return NULL;
 
   struct node *temp = g_head;
-  Task *highestPriorityTask = temp->task;
+  Task *nextTask = NULL;
 
+  // Traverse to find the highest priority task
   while (temp != NULL) {
-    if (temp->task->priority > highestPriorityTask->priority ||
-        (temp->task->priority == highestPriorityTask->priority &&
-         comesBefore(temp->task->name, highestPriorityTask->name))) {
-      highestPriorityTask = temp->task;
+    if (nextTask == NULL || compareTasks(temp->task, nextTask) < 0) {
+      nextTask = temp->task;
     }
     temp = temp->next;
   }
 
   // Remove the task from the list
-  delete (&g_head, highestPriorityTask);
-  return highestPriorityTask;
+  delete (&g_head, nextTask);
+  return nextTask;
 }
 
-// Function to schedule tasks based on Priority
+// Function to schedule tasks based on priority round robin
 void schedule() {
   int currentTime = 0;
   int totalBurstTime = 0;
