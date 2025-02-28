@@ -1,111 +1,57 @@
+//
+//  schedule_priority.c
+//  CSS 430
+//
+//  Created by Uyen Minh Hoang on 4/22/20.
+//  Copyright © 2020 Uyen Minh Hoang. All rights reserved.
+//
+
 #include "cpu.h"
 #include "list.h"
 #include "schedulers.h"
 #include "task.h"
-#include <stdbool.h> // For bool
 #include <stdio.h>
-#include <stdlib.h> // For malloc and free
-#include <string.h> // For strdup
+#include <stdlib.h>
+#include <string.h>
 
-struct node *g_head = NULL; // Global head of the task list
+struct node *list = NULL; // create a task list
 
-// Function to add a task to the list
 void add(char *name, int priority, int burst) {
-  Task *newTask = (Task *)malloc(sizeof(Task));
-  newTask->name = strdup(name);
+  // allocate a space for the struct
+  Task *newTask = malloc(sizeof(Task)); // same way the source code use
+
+  // initialize the new node
+  newTask->name = name;
   newTask->priority = priority;
   newTask->burst = burst;
-  insert(&g_head, newTask);
+  insert(&list, newTask);
 }
 
-// Function to compare two task names lexicographically
-bool comesBefore(char *a, char *b) { return strcmp(a, b) < 0; }
-
-// Function to compare tasks based on priority and lexicographical order
-int compareTasks(Task *task1, Task *task2) {
-  if (task1->priority == task2->priority) {
-    return comesBefore(task1->name, task2->name) ? -1 : 1;
-  }
-  return task1->priority -
-         task2->priority; // Higher priority first (1 is higher priority)
-}
-
-// Function to pick the next task based on priority and round-robin
-// (lexicographical for same priority)
-Task *pickNextTask() {
-  if (!g_head)
-    return NULL;
-
-  struct node *temp = g_head;
-  Task *nextTask = NULL;
-
-  // Traverse to find the highest priority task
-  while (temp != NULL) {
-    if (nextTask == NULL || compareTasks(temp->task, nextTask) < 0) {
-      nextTask = temp->task;
+// need to find the task with the shortest burst time
+Task *pickNextTask() { // have to put the method as a pointer to use it in the
+                       // next method
+  struct node *currentTask = list;
+  Task *priorityTask = list->task;
+  while (currentTask != NULL) {
+    // add "=" sign so when there are tasks with the same priority, the tasks
+    // will be picked by the order they arrive
+    if (currentTask->task->priority > priorityTask->priority) {
+      priorityTask = currentTask->task;
     }
-    temp = temp->next;
+    if (currentTask->task->priority == priorityTask->priority) {
+      if (strcmp(currentTask->task->name, priorityTask->name) < 0) {
+        priorityTask = currentTask->task;
+      }
+    }
+    currentTask = currentTask->next;
   }
-
-  // Remove the task from the list
-  delete (&g_head, nextTask);
-  return nextTask;
+  return priorityTask;
 }
 
-// Function to schedule tasks based on priority round robin
 void schedule() {
-  int currentTime = 0;
-  int totalBurstTime = 0;
-  int dispatcherTime = 0;
-  int numTasks = 0;
-  Task *task;
-
-  // Arrays to store task information for TAT, WT, RT
-  char *taskNames[100];
-  int burstTimes[100];
-  int startTimes[100];
-  int finishTimes[100];
-
-  while ((task = pickNextTask()) != NULL) {
-    taskNames[numTasks] = task->name;
-    burstTimes[numTasks] = task->burst;
-    startTimes[numTasks] = currentTime;
-    run(task, task->burst);
-    currentTime += task->burst;
-    finishTimes[numTasks] = currentTime;
-    totalBurstTime += task->burst;
-    if (g_head !=
-        NULL) { // Increment dispatcher time only if there is a next task
-      dispatcherTime++;
-    }
-    printf("        Time is now: %d\n", currentTime);
-    free(task->name);
-    free(task);
-    numTasks++;
+  while (list != NULL) {
+    Task *currentTask = pickNextTask(); // need pointer to access the struct
+    run(currentTask, currentTask->burst);
+    delete (&list, currentTask);
   }
-
-  // Calculate CPU utilization
-  int totalTime = totalBurstTime + dispatcherTime;
-  printf("Total Time required is %d units\n", totalTime);
-  double cpuUtilization = ((double)totalBurstTime / totalTime) * 100.0;
-  printf("CPU Utilization: %.2f%%\n", cpuUtilization);
-
-  // Print TAT, WT, RT table
-  printf("...|");
-  for (int i = 0; i < numTasks; i++) {
-    printf(" %s |", taskNames[i]);
-  }
-  printf("\nTAT|");
-  for (int i = 0; i < numTasks; i++) {
-    printf(" %d |", finishTimes[i]);
-  }
-  printf("\nWT |");
-  for (int i = 0; i < numTasks; i++) {
-    printf(" %d |", startTimes[i]);
-  }
-  printf("\nRT |");
-  for (int i = 0; i < numTasks; i++) {
-    printf(" %d |", startTimes[i]);
-  }
-  printf("\n");
 }
