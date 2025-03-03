@@ -8,6 +8,8 @@
 #include <stdlib.h>  // calloc
 #include <string.h>  // strcmp
 #include <unistd.h>  // execvp
+#include <sys/wait.h> // wait()
+#include <ctype.h>   // isspace
 
 #define MAXLINE 80
 #define PROMPT "osh> "
