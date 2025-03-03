@@ -1,0 +1,11 @@
+A  X  10  F
+S
+A  Y  15  B
+S
+A  Z  5   W
+S
+F  X
+S
+C
+S
+E

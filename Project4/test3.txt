@@ -1,0 +1,10 @@
+A  M  10  F
+S
+A  N  20  F
+S
+A  O  30  F
+S
+F  N
+S
+C
+S

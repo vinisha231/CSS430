@@ -1,0 +1,17 @@
+A  A  10  F
+S
+A  X  10  F
+S
+A  B  10  F
+S
+A  X  20  F
+S
+A  C   5  F
+S
+A  X  15  F
+S
+A  D   5  F
+S
+F  X
+S
+E

@@ -1,0 +1,10 @@
+A  D  10  F
+S
+A  E  20  B
+S
+A  F  15  W
+S
+F  D
+S
+C
+S
