@@ -44,8 +44,12 @@ int interactiveShell() {
 int tokenizeCommand(char *cmd, char *args[], int maxArgs) {
   int argCount = 0; // number of arguments
   char *p = cmd; // pointer to command string
-  
-  while (*p != NULL) {
+
+  // Reserve the final slot for the NULL terminator written after the loop.
+  // Without this bound, a line with more than maxArgs tokens (e.g. a run of
+  // '>' characters, each its own token) writes past args[], overflowing the
+  // caller's stack array.
+  while (*p != NULL && argCount < maxArgs - 1) {
     while (isspace((unsigned char)*p)) { // skip leading whitespace
       p++; // move to next character
     }
