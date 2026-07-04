@@ -169,7 +169,9 @@ int main() {
       cmd[strlen(cmd) - 1] = 0;
       char *t = strtok(cmd, " ");
       int i = 0;
-      while (t != 0) {
+      // Leave room for the NULL terminator so a line with many tokens can't
+      // write past argsr[MAXCHAR].
+      while (t != 0 && i < MAXCHAR - 1) {
         argsr[i] = t;
         t = strtok(0, " ");
         i++;
@@ -186,7 +188,9 @@ int main() {
             line[1] = ' ';
           char *token = strtok(line, " ");
           int k = 0;
-          while (token != 0) {
+          // A 256-byte file line can hold more than MAXCHAR space-separated
+          // tokens; bound k so we never write past the global args[MAXCHAR].
+          while (token != 0 && k < MAXCHAR - 1) {
             args[k] = token;
             token = strtok(0, " ");
             k++;
